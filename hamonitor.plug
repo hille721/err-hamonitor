@@ -1,0 +1,11 @@
+[Core]
+name = hamonitor
+module = hamonitor
+DependsOn = Webserver
+
+[Documentation]
+description = Monitor your home assistant instance or any other kind of server/application
+
+[Python]
+version = 3
+
