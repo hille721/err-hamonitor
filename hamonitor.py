@@ -90,6 +90,15 @@ class Hamonitor(BotPlugin):
             "STATUS"
         ] = status
 
+    def _send_admins(self, message):
+        """send message to all admins
+
+        Args:
+            message (str): message to send
+        """
+        for admin in self.bot_config.BOT_ADMINS:
+            self.send(self.build_identifier(admin), message)
+
     def _pingcmd(self, ip):
         """Ping an IP address
 
@@ -146,10 +155,7 @@ class Hamonitor(BotPlugin):
                     ping_result = self._pingcmd(ip)
 
                 # send alert
-                self.send(
-                    self.build_identifier("@CHANGE_ME"),
-                    f"server {hostname} ({ip}) is down.",
-                )
+                self._send_admins(f"server {hostname} ({ip}) is down.")
                 self._set_host_status(hostname, "down")
                 return False
 
@@ -162,10 +168,7 @@ class Hamonitor(BotPlugin):
             # host changed from down to up
             if host["STATUS"] == "down":
                 # send alive message again
-                self.send(
-                    self.build_identifier("@CHANGE_ME"),
-                    f"server {hostname} ({ip}) is up again.",
-                )
+                self._send_admins(f"server {hostname} ({ip}) is up again.")
                 self._set_host_status(hostname, "up")
                 return True
 
@@ -207,9 +210,8 @@ class Hamonitor(BotPlugin):
                     appl_fetch_result = self._fetch(url)
 
                 # send alert
-                self.send(
-                    self.build_identifier("@CHANGE_ME"),
-                    f"application {hostname} - {applicationname} ({url}) is down.",
+                self._send_admins(
+                    f"application {hostname} - {applicationname} ({url}) is down."
                 )
                 self._set_application_status(hostname, applicationname, "down")
                 return False
@@ -223,9 +225,8 @@ class Hamonitor(BotPlugin):
             # application changed from down to up
             if application["STATUS"] == "down":
                 # send alive message again
-                self.send(
-                    self.build_identifier("@CHANGE_ME"),
-                    f"application {hostname}-{applicationname} ({url}) is up again.",
+                self._send_admins(
+                    f"application {hostname}-{applicationname} ({url}) is up again."
                 )
                 self._set_application_status(hostname, applicationname, "up")
                 return True
